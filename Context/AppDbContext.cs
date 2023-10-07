@@ -12,5 +12,24 @@ namespace RestApiTemplate.Context
         }
         public DbSet<Template> Templates { get; set; }
         public DbSet<TemplateDetail> TemplateDetails { get; set; }
+        public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
+        {
+            var entriesTemplate = ChangeTracker.Entries().Where(x => x.Entity is Template && (x.State == EntityState.Added || x.State == EntityState.Modified));
+            foreach (var entry in entriesTemplate)
+            {
+                switch (entry.State)
+                {
+                    case EntityState.Added:
+                        ((Template)entry.Entity).CreatedDate = DateTime.Now;
+                        ((Template)entry.Entity).UpdatedDate = DateTime.Now;
+                        break;
+                    case EntityState.Modified:
+                        Entry((Template)entry.Entity).Property(x => x.CreatedDate).IsModified = false;
+                        ((Template)entry.Entity).UpdatedDate = DateTime.Now;
+                        break;
+                }
+            }
+            return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
+        }
     }
 }
