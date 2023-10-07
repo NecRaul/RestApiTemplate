@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using RestApiTemplate.Models;
 
 namespace RestApiTemplate.Context
 {
@@ -9,5 +10,7 @@ namespace RestApiTemplate.Context
         {
             optionsBuilder.UseMySQL(_connectionString);
         }
+        public DbSet<Template> Templates { get; set; }
+        public DbSet<TemplateDetail> TemplateDetails { get; set; }
     }
 }
